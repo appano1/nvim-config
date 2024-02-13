@@ -2,6 +2,7 @@ return {
   "numToStr/Comment.nvim",
   dependencies = {
     "JoosepAlviste/nvim-ts-context-commentstring",
+    "nvim-treesitter/nvim-treesitter",
   },
   lazy = false,
   config = function()
