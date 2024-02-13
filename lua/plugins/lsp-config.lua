@@ -9,37 +9,51 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "tsserver" },
+        ensure_installed = { "lua_ls", "tsserver", "eslint", "volar", "jsonls" },
       })
     end,
   },
-  { "hrsh7th/cmp-nvim-lsp" },
   {
     "neovim/nvim-lspconfig",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "folke/neoconf.nvim",
+    },
     config = function()
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      require("neoconf").setup({})
 
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
       local lspconfig = require("lspconfig")
 
-      -- LSP lua
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            runtime = { version = "LuaJIT" },
-            diagnostics = {
-              globals = { "vim" },
-            },
-            workspace = {
-              library = { vim.env.VIMRUNTIME },
-            },
-          },
-        },
-      })
+      require("mason-lspconfig").setup_handlers({
+        function(server_name)
+          local server_config = {
+            capabilities = capabilities,
+          }
 
-      -- LSP typescript
-      lspconfig.tsserver.setup({
-        capabilities = capabilities,
+          if require("neoconf").get(server_name .. ".disable") then
+            return
+          end
+
+          if server_name == "lua_ls" then
+            server_config.settings = {
+              Lua = {
+                runtime = { version = "LuaJIT" },
+                diagnostics = {
+                  globals = { "vim" },
+                  disable = { "missing-parameters", "missing-fields" },
+                },
+                workspace = {
+                  library = { vim.env.VIMRUNTIME },
+                },
+              },
+            }
+          elseif server_name == "volar" then
+            server_config.filetypes = { "vue", "typescript", "javascript" }
+          end
+
+          lspconfig[server_name].setup(server_config)
+        end,
       })
 
       vim.keymap.set("n", "gh", vim.lsp.buf.hover, {})
