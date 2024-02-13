@@ -20,9 +20,24 @@ return {
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 			local lspconfig = require("lspconfig")
+
+      -- LSP lua
 			lspconfig.lua_ls.setup({
 				capabilities = capabilities,
-			})
+        settings = {
+          Lua = {
+            runtime = { version = "LuaJIT" },
+            diagnostics = {
+              globals = { "vim" },
+            },
+            workspace = {
+              library = { vim.env.VIMRUNTIME },
+            },
+          },
+        },
+      })
+
+      -- LSP typescript
 			lspconfig.tsserver.setup({
 				capabilities = capabilities,
 			})
