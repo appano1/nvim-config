@@ -9,6 +9,6 @@ return {
 			},
 		})
 
-		vim.keymap.set("n", "<M-F>", vim.lsp.buf.format, {})
+		vim.keymap.set({ "n", "i" }, "<M-F>", vim.lsp.buf.format, {})
 	end,
 }
