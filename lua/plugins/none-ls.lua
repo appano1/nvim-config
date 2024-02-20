@@ -10,6 +10,12 @@ return {
       },
     })
 
-    vim.keymap.set({ "n", "i" }, "<M-F>", vim.lsp.buf.format, {})
+    vim.keymap.set({ "n", "i" }, "<M-F>", function()
+      vim.lsp.buf.format({
+        filter = function(client)
+          return client.name ~= "tsserver" and client.name ~= "volar"
+        end,
+      })
+    end, {})
   end,
 }
